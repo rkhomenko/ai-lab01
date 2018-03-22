@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt, numpy as np
 from sklearn import linear_model
 from pandas import read_csv
 
-csv_file = open('challenge_dataset.txt')
+data = None
+with  open('challenge_dataset.csv') as csv_file:
+    data = read_csv(csv_file)
 
-data = read_csv(csv_file)
 x = data['x'].as_matrix()
 y = data['y'].as_matrix()
 
