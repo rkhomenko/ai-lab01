@@ -5,15 +5,6 @@ from pandas import read_csv
 from sklearn import linear_model
 from itertools import combinations
 
-header = [
-    'Gas Fuel',
-    'Liquid Fuel',
-    'Solid Fuel',
-    'Cement',
-    'Gas Flaring',
-    'Per Capita'
-]
-
 data = None
 with open('global_co2.csv') as csv_file:
     data = read_csv(csv_file)
@@ -35,8 +26,6 @@ print("************ max corr ***************")
 print(data_max.corr())
 print("************ average corr ***************")
 print(data_average.corr())
-
-reg = linear_model.LinearRegression()
 
 header = [
     'Gas Fuel',
