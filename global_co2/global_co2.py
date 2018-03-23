@@ -19,27 +19,52 @@ with open('global_co2.csv') as csv_file:
     data = read_csv(csv_file)
 
 nan = float('Nan')
+average = data['Per Capita'].mean()
 
 data_null = data.copy()
 data_max = data.copy()
+data_average = data.copy()
 
 data_null['Per Capita'] = data_null['Per Capita'].replace(nan, 0)
-
 data_max['Per Capita'] = data_max['Per Capita'].replace(nan, 1.5)
+data_average['Per Capita'] = data_average['Per Capita'].replace(nan, average)
 
-def generate_combo_figs(data, suffix):
-    for combo in combinations(header, 2):
-        plt.xlabel(combo[0])
-        plt.ylabel(combo[1])
-    
-        x = data[combo[0]].as_matrix()
-        y = data[combo[1]].as_matrix()
+print("************ null corr ***************")
+print(data_null.corr())
+print("************ max corr ***************")
+print(data_max.corr())
+print("************ average corr ***************")
+print(data_average.corr())
 
-        file_name = '{}-{}-{}.svg'.format(combo[0], combo[1], suffix).replace(' ', '_')
+reg = linear_model.LinearRegression()
 
-        plt.plot(x, y, 'ro')
-        plt.savefig(file_name)
+header = [
+    'Gas Fuel',
+    'Liquid Fuel',
+    'Solid Fuel',
+    'Cement',
+    'Per Capita'
+]
+
+def fit(data, suffix):
+    x = data[header].as_matrix()
+    y = data['Gas Flaring'].as_matrix()
+
+    reg = linear_model.LinearRegression()
+    reg.fit(x, y)
+        
+    n = len(reg.coef_)
+    for i in range(0, n):
+        plt.xlabel(header[i])
+        plt.ylabel('Gas Flaring')
+        plt.plot(data[header[i]].as_matrix(), y, 'ro')
+
+        t = np.arange(data[header[i]].min(), data[header[i]].max(), 0.1)
+        plt.plot(t, reg.coef_[i] * t + reg.intercept_)
+
+        plt.savefig('Gas_Flaring-{}-{}.svg'.format(header[i], suffix).replace(' ', '-'))
         plt.clf()
 
-generate_combo_figs(data_null, 'null')
-generate_combo_figs(data_max, 'max')
+fit(data_null, 'null')
+fit(data_max, 'max')
+fit(data_average, 'average')
